@@ -1,0 +1,106 @@
+<html>
+<% include head.ejs %>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="p-4">라즈베리파이 설정</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table text-center">
+                    <tr>
+                        <th scope="col">분류</th>
+                        <th scope="col">값</th>
+                        <th scope="col">비고</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">#</th>
+                        <td><%= node._id %></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">이름</th>
+                        <td><%= node.name %></td>
+                        <td><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#nameChangeModal">변경하기</button></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">IP</th>
+                        <td><%= node.ip %></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">추가 일시</th>
+                        <% var date = new Date(node.created); function twoDigits(n) { return (n<10)?("0"+n):(n); }%>
+                        <td><%= date.getFullYear() %>-<%= twoDigits(date.getMonth()+1) %>-<%= twoDigits(date.getDate()) %> <%= twoDigits(date.getHours()) %>:<%= twoDigits(date.getMinutes()) %>:<%= twoDigits(date.getSeconds()) %></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">재생 중인 동영상</th>
+                        <td><%= (node.video)?(node.video):("재생 중인 동영상 없음") %></td>
+                        <td><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#videoChangeModal">변경하기</button></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <button type="button" class="btn btn-danger" onclick="if(confirm('정말로 삭제하시겠습니까?')){submitFormAjax('/nodes', 'DELETE', {'id':'<%= node._id %>'}, '/')}">삭제하기</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='/'">돌아가기</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="nameChangeModal" tabindex="-1" role="dialog" aria-labelledby="nameChangeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nameChangeModalLabel">라즈베리파이 이름 변경</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/nodes/config/<%= node._id %>/name" method="POST">
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input id="change-name" type="text" class="form-control" name="name" placeholder="라즈베리파이 이름">
+                            <small class="form-text text-muted">라즈베리파이를 구분할 수 있는 이름을 지어주세요.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success" onclick="submitFormAjax('/nodes', 'PUT', {'id':'<%= node._id %>', 'name':$('input#change-name').val()}, '/nodes/config/<%= node._id %>')">변경하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="videoChangeModal" tabindex="-1" role="dialog" aria-labelledby="videoChangeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoChangeModalLabel">비디오 변경</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="change-video" action="http://<%= node.ip %>:9090/video" method="POST" enctype="multipart/form-data">
+                        <input type="file" name="video" accept="video/*">
+                        <input type="hidden" name="successurl" value="http://<%= local.ip %>:<%= local.port %>/">
+                        <input type="hidden" name="failureurl" value="http://<%= local.ip %>:<%= local.port %>/error">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success" onclick="submitForm('change-video')">변경하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% include script.ejs %>
+</body>
+
+</html>

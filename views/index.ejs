@@ -1,0 +1,76 @@
+<html>
+<% include head.ejs %>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="p-4">Raspberrypi Video Management System</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table table-clickable text-center">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">이름</th>
+                        <th scope="col">IP</th>
+                        <th scope="col">추가 일시</th>
+                        <th scope="col">재생 중인 동영상</th>
+                    </tr>
+                    <% if (nodes.length == 0) { %>
+                    <tr class="info">
+                        <td class="text-center text-muted" colspan="5"><span>라즈베리파이가 없습니다!</span></td>
+                    </tr>
+                    <% } else { for (var i=0; i<nodes.length; i++) { %>
+                    <tr onclick="location.href='/nodes/config/<%= nodes[i]._id %>'">
+                        <td><%= nodes[i]._id %></td>
+                        <td><%= nodes[i].name %></td>
+                        <td><%= nodes[i].ip %></td>
+                        <% var date = new Date(nodes[i].created); function twoDigits(n) { return (n<10)?("0"+n):(n); }%>
+                        <td><%= date.getFullYear() %>-<%= twoDigits(date.getMonth()+1) %>-<%= twoDigits(date.getDate()) %> <%= twoDigits(date.getHours()) %>:<%= twoDigits(date.getMinutes()) %>:<%= twoDigits(date.getSeconds()) %></td>
+                        <td><%= (nodes[i].video)?(nodes[i].video):("재생 중인 동영상 없음") %></td>
+                    </tr>
+                    <% } } %>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">추가</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">라즈베리파이 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-rasp" action="/nodes" method="POST">
+                        <div class="form-group">
+                            <label for="new-rasp-name">이름</label>
+                            <input type="text" class="form-control" id="new-rasp-name" name="name" placeholder="라즈베리파이 이름">
+                            <small class="form-text text-muted">라즈베리파이를 구분할 수 있는 이름을 지어주세요.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-rasp-ip">IP</label>
+                            <input type="text" class="form-control" id="new-rasp-ip" name="ip" placeholder="라즈베리파이 IP">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success" onclick="submitForm('add-rasp')">추가</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% include script.ejs %>
+</body>
+
+</html>
