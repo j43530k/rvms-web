@@ -31,7 +31,7 @@ module.exports = {
                 console.log(err);
                 res.redirect(req.body.failureurl);
             }
-            exec("omxplayer --loop uploads/" + req.file.filename);
+            exec("omxplayer --aspect-mode fill --loop uploads/" + req.file.filename);
             res.redirect(req.body.successurl);
         });
     },
@@ -40,7 +40,7 @@ module.exports = {
 
         VideoModel.findOne({}).then(function (video) {
             res.send({
-                video: video.originalname
+                video: (video)?(video.originalname):("")
             })
         });
     }

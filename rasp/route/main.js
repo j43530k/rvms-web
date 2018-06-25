@@ -10,8 +10,8 @@ module.exports = {
                 res.render("index", {
                     info: {
                         ip: ip.address("public"),
-                        server: conn.ip,
-                        video_name: video.originalname
+                        server: (conn)?(conn.ip):(""),
+                        video_name: (video)?(video.originalname):("")
                     }
                 });
             })
