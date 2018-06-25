@@ -7,6 +7,7 @@ module.exports = {
     uploadVideo: function (req, res) {
         var VideoModel = req.app.get("database").VideoModel;
 
+        exec("killall omxplayer.bin");
         VideoModel.find({}).then(function (videos) {
             for (var i = 0; i < videos.length; i++) {
                 var video_name = videos[i].name
@@ -30,7 +31,7 @@ module.exports = {
                 console.log(err);
                 res.redirect(req.body.failureurl);
             }
-            exec("open /Applications/Movist.app uploads/" + req.file.filename);
+            exec("omxplayer --loop uploads/" + req.file.filename);
             res.redirect(req.body.successurl);
         });
     },
