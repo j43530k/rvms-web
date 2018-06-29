@@ -1,13 +1,4 @@
-var node = require("./node");
+var rasp = require("./rasp");
+var update = require("./update");
 
-module.exports = [{
-    file: "./main",
-    path: "/",
-    method: "index",
-    type: "GET"
-}, {
-    file: "./main",
-    path: "/nodes/config/:id",
-    method: "config",
-    type: "GET"
-}].concat(node);
+module.exports = [].concat(rasp).concat(update);

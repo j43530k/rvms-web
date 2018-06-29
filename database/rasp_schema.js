@@ -1,7 +1,7 @@
 var Schema = {};
 
 Schema.createSchema = function (mongoose) {
-    var NodeSchema = mongoose.Schema({
+    var RaspSchema = mongoose.Schema({
         name: {
             type: String,
             required: true
@@ -17,11 +17,11 @@ Schema.createSchema = function (mongoose) {
         }
     });
 
-    NodeSchema.static("findAll", function (callback) {
+    RaspSchema.static("findAll", function (callback) {
         return this.find({}, callback);
     });
 
-    return NodeSchema;
+    return RaspSchema;
 };
 
 module.exports = Schema;

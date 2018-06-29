@@ -1,7 +1,7 @@
 module.exports = [{
-        file: "./node_schema",
-        collection: "nodes",
-        schemaName: "NodeSchema",
-        modelName: "NodeModel"
+        file: "./rasp_schema",
+        collection: "rasps",
+        schemaName: "RaspSchema",
+        modelName: "RaspModel"
     }
 ];

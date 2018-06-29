@@ -9,11 +9,31 @@ var socketio = require("socket.io");
 var cors = require("cors");
 var flash = require("connect-flash");
 var fs = require("fs");
+var path = require('path');
+var multer = require("multer");
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+});
+var upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        if ([".mkv", ".wmv", ".mov", ".mp4", ".avi", ".m4a"].includes(path.extname(file.originalname).toLowerCase())) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    }
+});
 
 var app = express();
 var config = require("./config");
 var database = require("./database");
-var router = require("./route")(express.Router());
+var router = require("./route")(express.Router(), upload);
 var server = require("http").Server(app);
 var io = socketio.listen(server);
 

@@ -1,4 +1,4 @@
-module.exports = function (router) {
+module.exports = function (router, upload) {
     var config = require("../config");
 
     console.log("[ ] (route) Router init called");
@@ -15,10 +15,18 @@ module.exports = function (router) {
                 );
                 break;
             case "POST":
-                router.post(
-                    config.ROUTE_INFO[i].path,
-                    require(config.ROUTE_INFO[i].file)[config.ROUTE_INFO[i].method]
-                );
+                if (config.ROUTE_INFO[i].upload) {
+                    router.post(
+                        config.ROUTE_INFO[i].path,
+                        upload.single(config.ROUTE_INFO[i].upload),
+                        require(config.ROUTE_INFO[i].file)[config.ROUTE_INFO[i].method]
+                    );
+                } else {
+                    router.post(
+                        config.ROUTE_INFO[i].path,
+                        require(config.ROUTE_INFO[i].file)[config.ROUTE_INFO[i].method]
+                    );
+                }
                 break;
             case "PUT":
                 router.put(
