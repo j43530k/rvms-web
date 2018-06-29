@@ -86,6 +86,7 @@ module.exports = {
             if (conn && conn.ip == ip) {
                 VideoModel.findOne({}).then(function (video) {
                     res.send({
+                        status: "success",
                         video: video ? video.originalname : ""
                     });
                 });

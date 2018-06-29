@@ -18,24 +18,17 @@ module.exports = {
         ConnModel.findOne({}).then(function (conn) {
             if (conn && conn.ip == ip) {
                 exec("git pull origin master", function (err, stdout, stderr) {
+                    console.log(stdout);
                     if (err) {
                         console.log(stderr);
                         res.send({
                             status: "error"
                         });
                     } else {
-                        exec("pm2 reload app", function (err, stdout, stderr) {
-                            if (err) {
-                                console.log(stderr);
-                                res.send({
-                                    status: "error"
-                                });
-                            } else {
-                                res.send({
-                                    status: "success"
-                                });
-                            }
+                        res.send({
+                            status: "success"
                         });
+                        exec("pm2 reload rvms-rasp");
                     }
                 });
             } else {
