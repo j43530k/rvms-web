@@ -140,7 +140,7 @@ module.exports = {
         }).then(async function (rasps) {
             var errors = [];
 
-            await rasps.forEach(rasp => {
+            await rasps.forEach((rasp, index) => {
                 var formData = {
                     video: fs.createReadStream('uploads/' + file_name)
                 };
@@ -152,32 +152,33 @@ module.exports = {
                         console.log(err);
                         errors.append(rasp.name);
                     }
+                    if (index == rasps.length - 1) {
+                        fs.readdir("uploads/", function (err, files) {
+                            if (err) {
+                                console.log(err);
+                            }
+
+                            for (var i = 0; i < files.length; i++) {
+                                fs.unlink("uploads/" + files[i], function (err) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                });
+                            }
+
+                            if (errors.length != 0) {
+                                res.send({
+                                    status: "error",
+                                    errors
+                                });
+                            } else {
+                                return res.send({
+                                    status: "success"
+                                });
+                            }
+                        });
+                    }
                 });
-            });
-
-            fs.readdir("uploads/", function (err, files) {
-                if (err) {
-                    console.log(err);
-                }
-
-                for (var i = 0; i < files.length; i++) {
-                    fs.unlink("uploads/" + files[i], function (err) {
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-
-                if (errors.length != 0) {
-                    res.send({
-                        status: "error",
-                        errors
-                    });
-                } else {
-                    return res.send({
-                        status: "success"
-                    });
-                }
             });
         });
     },
