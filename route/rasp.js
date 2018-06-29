@@ -140,7 +140,7 @@ module.exports = {
         }).then(async function (rasps) {
             var errors = [];
 
-            await rasps.forEach((rasp, index) => {
+            await rasps.forEach(rasp => {
                 var formData = {
                     video: fs.createReadStream('uploads/' + file_name)
                 };
@@ -152,33 +152,34 @@ module.exports = {
                         console.log(err);
                         errors.append(rasp.name);
                     }
-                    if (index == rasps.length - 1) {
-                        fs.readdir("uploads/", function (err, files) {
+                });
+            });
+
+            fs.readdir("uploads/", function (err, files) {
+                if (err) {
+                    console.log(err);
+                }
+
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i] != file_name) {
+                        fs.unlink("uploads/" + files[i], function (err) {
                             if (err) {
                                 console.log(err);
                             }
-
-                            for (var i = 0; i < files.length; i++) {
-                                fs.unlink("uploads/" + files[i], function (err) {
-                                    if (err) {
-                                        console.log(err);
-                                    }
-                                });
-                            }
-
-                            if (errors.length != 0) {
-                                res.send({
-                                    status: "error",
-                                    errors
-                                });
-                            } else {
-                                return res.send({
-                                    status: "success"
-                                });
-                            }
                         });
                     }
-                });
+                }
+
+                if (errors.length != 0) {
+                    res.send({
+                        status: "error",
+                        errors
+                    });
+                } else {
+                    return res.send({
+                        status: "success"
+                    });
+                }
             });
         });
     },
