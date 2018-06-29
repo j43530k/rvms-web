@@ -71,6 +71,7 @@ app.set("initVideo", function () {
                 "omxplayer --aspect-mode fill --loop uploads/" +
                 video.name
             );
+            exec("xrefresh");
         }
     });
 });
