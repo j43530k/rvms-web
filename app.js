@@ -1,14 +1,11 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
-var expressErrorHandler = require("express-error-handler");
 var session = require("express-session");
-var mongoose = require("mongoose");
 var MongoStore = require("connect-mongo")(session);
 var socketio = require("socket.io");
 var cors = require("cors");
 var flash = require("connect-flash");
-var fs = require("fs");
 var path = require('path');
 var multer = require("multer");
 var storage = multer.diskStorage({
@@ -88,14 +85,6 @@ app.use(express.static("public"));
 app.use(flash());
 app.use(cors());
 app.use("/", router);
-app.use(expressErrorHandler.httpError(404));
-app.use(
-    expressErrorHandler({
-        static: {
-            "404": "./public/404.html"
-        }
-    })
-);
 
 server.listen(config.PORT, function () {
     console.log("[+] (app) Server started at port " + config.PORT);

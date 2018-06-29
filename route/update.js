@@ -15,7 +15,17 @@ module.exports = {
                 res.send({
                     status: "success"
                 });
-                exec("pm2 reload rvms-web");
+                exec("npm install", function (err, stdout, stderr) {
+                    console.log(stdout);
+                    if (err) {
+                        console.log(stderr);
+                        res.send({
+                            status: "error"
+                        });
+                    } else {
+                        exec("pm2 reload rvms-web");
+                    }
+                });
             }
         });
     }
