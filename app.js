@@ -30,23 +30,23 @@ var upload = multer({
 var app = express();
 var config = require("./config");
 var database = require("./database");
-var router = require("./route")(express.Router(), upload);
 var server = require("http").Server(app);
 var io = socketio.listen(server);
+var router = require("./route")(express.Router(), upload);
 
 io.sockets.on("connection", function (socket) {
     console.log("[ ] Connection info : ", socket.request.connection._peername);
     socket.remoteAddress = socket.request.connection._peername.address;
     socket.remotePort = socket.request.connection._peername.port;
 
-    socket.on("message", function (message) {
-        console.log("[ ] Received message event.");
-        console.dir(message);
-        if (message.recepient == "ALL") {
-            console.log("[ ] Message Broadcasted");
-            io.sockets.emit("message", message);
-        }
-    });
+    // socket.on("message", function (message) {
+    //     console.log("[ ] Received message event.");
+    //     console.dir(message);
+    //     if (message.recepient == "ALL") {
+    //         console.log("[ ] Message Broadcasted");
+    //         io.sockets.emit("message", message);
+    //     }
+    // });
 
     socket.on("disconnect", function () {
         console.log(
@@ -60,6 +60,7 @@ io.sockets.on("connection", function (socket) {
 
 database.init(app, config);
 
+app.set('io', io);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.engine('html', require("ejs").renderFile);

@@ -4,7 +4,7 @@ var fs = require("fs");
 var request = require("request");
 
 module.exports = {
-    add: function(req, res) {
+    add: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
 
         var name = req.body.name;
@@ -18,7 +18,7 @@ module.exports = {
                         name: name,
                         ip: ip
                     });
-                    new_rasp.save(function(err) {
+                    new_rasp.save(function (err) {
                         if (err) {
                             console.log(err);
                             return res.send({
@@ -42,11 +42,11 @@ module.exports = {
                 });
             });
     },
-    list: function(req, res) {
+    list: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
 
         RaspModel.find({})
-            .then(async function(rasps) {
+            .then(async function (rasps) {
                 if (rasps == null) {
                     return res.send({
                         status: "success",
@@ -71,22 +71,22 @@ module.exports = {
                     rasps
                 });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log(err);
                 return res.send({
                     status: "error"
                 });
             });
     },
-    get: function(req, res) {
+    get: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
 
         var rasp_id = req.params.id;
 
         RaspModel.findOne({
-            _id: rasp_id
-        })
-            .then(async function(rasp) {
+                _id: rasp_id
+            })
+            .then(async function (rasp) {
                 if (rasp == null) {
                     return res.send({
                         status: "error"
@@ -104,25 +104,25 @@ module.exports = {
                     rasp
                 });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log(err);
                 return res.send({
                     status: "error"
                 });
             });
     },
-    rename: function(req, res) {
+    rename: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
 
         var rasp_id = req.params.id;
         var new_name = req.body.name;
 
         RaspModel.findOne({
-            _id: rasp_id
-        })
-            .then(function(rasp) {
+                _id: rasp_id
+            })
+            .then(function (rasp) {
                 rasp.name = new_name;
-                rasp.save(function(err) {
+                rasp.save(function (err) {
                     if (err) {
                         console.log(err);
                         return res.send({
@@ -134,15 +134,16 @@ module.exports = {
                     });
                 });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log(err);
                 return res.send({
                     status: "error"
                 });
             });
     },
-    changeVideo: function(req, res) {
+    changeVideo: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
+        var io = req.app.get("io");
 
         var file_name = req.file.originalname;
         var rasp_ids = JSON.parse(req.body.ids);
@@ -151,81 +152,84 @@ module.exports = {
             _id: {
                 $in: rasp_ids
             }
-        }).then(async function(rasps) {
-            var errors = [];
-
+        }).then(async function (rasps) {
             await rasps.forEach((rasp, index) => {
+                var fileStream = fs.createReadStream("uploads/" + file_name);
+                var fileSize = fs.statSync("uploads/" + file_name).size;
                 var formData = {
-                    video: fs.createReadStream("uploads/" + file_name)
+                    video: fileStream
                 };
-                request.post(
-                    {
-                        url: "http://" + rasp.ip + ":9090/video",
-                        formData: formData
-                    },
-                    function(err, httpResponse, body) {
-                        if (err) {
-                            console.log(err);
-                            errors.append(rasp.name);
-                        }
-                        if (index == rasps.length - 1) {
-                            fs.readdir("uploads/", function(err, files) {
-                                if (err) {
-                                    console.log(err);
-                                }
-
-                                for (var i = 0; i < files.length; i++) {
-                                    if (files[i] != file_name) {
-                                        fs.unlink(
-                                            "uploads/" + files[i],
-                                            function(err) {
-                                                if (err) {
-                                                    console.log(err);
-                                                }
-                                            }
-                                        );
-                                    }
-                                }
-
-                                if (errors.length != 0) {
-                                    res.send({
-                                        status: "error",
-                                        errors
-                                    });
-                                } else {
-                                    return res.send({
-                                        status: "success"
-                                    });
-                                }
+                res.send({
+                    status: "success"
+                });
+                var r = request
+                    .post({
+                            url: "http://" + rasp.ip + ":9090/video",
+                            formData: formData
+                        },
+                        function (err, httpResponse, body) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            io.sockets.emit("videoUploaded", {
+                                rasp
                             });
+                            if (index == rasps.length - 1) {
+                                fs.readdir("uploads/", function (err, files) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    for (var i = 0; i < files.length; i++) {
+                                        if (files[i] != file_name) {
+                                            fs.unlink(
+                                                "uploads/" + files[i],
+                                                function (err) {
+                                                    if (err) {
+                                                        console.log(err);
+                                                    }
+                                                }
+                                            );
+                                        }
+                                    }
+                                });
+                            }
                         }
-                    }
-                );
+                    )
+                    .on(
+                        "drain",
+                        _.throttle(() => {
+                            io.sockets.emit("uploadedVideoSize", {
+                                rasp,
+                                size: r.req.connection.bytesWritten,
+                                total: fileSize
+                            });
+                        }, 500)
+                    );
             });
         });
     },
-    delete: function(req, res) {
+    delete: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
 
         var rasp_id = req.params.id;
 
         RaspModel.findOne({
-            _id: rasp_id
-        })
-            .then(function(rasp) {
+                _id: rasp_id
+            })
+            .then(function (rasp) {
                 axios
                     .delete("http://" + rasp.ip + ":9090/connection")
                     .then(response => {
                         if (response.data.status == "success") {
                             RaspModel.remove({
-                                _id: rasp_id
-                            })
-                                .then(function(info) {
+                                    _id: rasp_id
+                                })
+                                .then(function (info) {
                                     return res.send({
                                         status: "success"
                                     });
                                 })
-                                .catch(function(err) {
+                                .catch(function (err) {
                                     console.log(err);
                                     return res.send({
                                         status: "error"
@@ -238,22 +242,22 @@ module.exports = {
                         }
                     });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log(err);
                 return res.send({
                     status: "error"
                 });
             });
     },
-    update: function(req, res) {
+    update: function (req, res) {
         var RaspModel = req.app.get("database").RaspModel;
 
         var rasp_id = req.params.id;
 
         RaspModel.findOne({
-            _id: rasp_id
-        })
-            .then(function(rasp) {
+                _id: rasp_id
+            })
+            .then(function (rasp) {
                 if (rasp == null) {
                     return res.send({
                         status: "error"
@@ -274,7 +278,7 @@ module.exports = {
                         }
                     });
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.log(err);
                 return res.send({
                     status: "error"
