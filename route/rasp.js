@@ -148,6 +148,16 @@ module.exports = {
         var file_name = req.file.originalname;
         var rasp_ids = JSON.parse(req.body.ids);
 
+        if (file_name && rasp_ids) {
+            res.send({
+                status: "success"
+            });
+        } else {
+            return res.send({
+                status: "error"
+            });
+        }
+
         RaspModel.find({
             _id: {
                 $in: rasp_ids
@@ -159,11 +169,7 @@ module.exports = {
                 var formData = {
                     video: fileStream
                 };
-                res.send({
-                    status: "success"
-                });
-                var r = request
-                    .post({
+                var r = request.post({
                             url: "http://" + rasp.ip + ":9090/video",
                             formData: formData
                         },
@@ -193,18 +199,14 @@ module.exports = {
                                     }
                                 });
                             }
-                        }
-                    )
-                    .on(
-                        "drain",
-                        _.throttle(() => {
-                            io.sockets.emit("uploadedVideoSize", {
-                                rasp,
-                                size: r.req.connection.bytesWritten,
-                                total: fileSize
-                            });
-                        }, 500)
-                    );
+                        })
+                    .on("drain", _.throttle(() => {
+                        io.sockets.emit("uploadedVideoSize", {
+                            rasp,
+                            size: r.req.connection.bytesWritten,
+                            total: fileSize
+                        });
+                    }, 500));
             });
         });
     },
