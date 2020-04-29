@@ -61,6 +61,20 @@ io.sockets.on("connection", function (socket) {
     });
 });
 
+app.set("initVideo", function () {
+    app.get("database").VideoModel.findOne({}).then(function (video) {
+        if (video) {
+            var {
+                exec
+            } = require("child_process");
+            exec(
+                "omxplayer --aspect-mode fill --loop uploads/" +
+                video.name
+            );
+        }
+    });
+});
+
 database.init(app, config);
 
 app.set('views', __dirname + '/views');

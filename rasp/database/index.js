@@ -28,6 +28,7 @@ function connect(app, config) {
     database.conn.on("open", function () {
         console.log("[+] (database) Database connected : " + databaseUrl);
         createSchema(app, config);
+        app.get("initVideo")();
     });
     database.conn.on("disconnected", function () {
         console.log(

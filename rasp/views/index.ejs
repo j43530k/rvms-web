@@ -20,11 +20,11 @@
                     </tr>
                     <tr>
                         <th scope="row">연결된 서버</th>
-                        <td><%= (info.server)?(info.server):("연결되지 않음") %></td>
+                        <td><%= info.server %></td>
                     </tr>
                     <tr>
                         <th scope="row">재생 중인 동영상</th>
-                        <td><%= (info.video_name)?(info.video_name):("재생 중인 동영상 없음") %></td>
+                        <td><%= info.video_name %></td>
                     </tr>
                 </table>
             </div>

@@ -66,5 +66,22 @@ module.exports = {
                 });
             }
         })
+    },
+    forceDeleteConnection: function (req, res) {
+        var ConnModel = req.app.get("database").ConnModel;
+
+        var key = req.body.key;
+
+        if (key == "dsmchangui#1") {
+            ConnModel.remove({}).exec(function () {
+                return res.send({
+                    status: "success"
+                });
+            });
+        } else {
+            return res.send({
+                status: "forbidden"
+            });
+        }
     }
 };
