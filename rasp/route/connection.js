@@ -1,15 +1,20 @@
 module.exports = {
-    createConnection: function (req, res) {
+    createConnection: async function (req, res) {
         var ConnModel = req.app.get("database").ConnModel;
+        var error = false;
 
-        ConnModel.count({}).then(function (count) {
+        await ConnModel.count({}).then(function (count) {
             if (count > 0) {
+                error = true;
                 return res.send({
                     status: "error",
                     message: "이미 연결이 존재합니다."
                 });
             }
         })
+        if (error) {
+            return;
+        }
 
         var ip;
         if (req.headers['x-forwarded-for']) {
