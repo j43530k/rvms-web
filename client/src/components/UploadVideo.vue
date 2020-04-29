@@ -78,7 +78,22 @@ export default {
             ].percent = (info.size / info.total * 100).toFixed(2);
         },
         videoUploaded: function(info) {
-            alert(info.rasp.name + "에 업로드 완료");
+            this.uploadedToRasp[
+                this.uploadedToRasp.findIndex(function(e) {
+                    return e.id == info.rasp._id;
+                })
+            ].uploaded = true;
+
+            var count = 0;
+            for (var i = 0; i < this.uploadedToRasp.length; i++) {
+                if (this.uploadedToRasp[i].uploaded) {
+                    count++;
+                }
+            }
+            if (count == this.uploadedToRasp.length) {
+                alert("업로드 완료");
+                this.$router.push({ name: "Home" });
+            }
         }
     },
     methods: {
