@@ -7,5 +7,5 @@ export default {
   RASP_UPDATE: BASE_URL + "/rasps/${id}/update",
   RASPS: BASE_URL + "/rasps",
   RASPS_VIDEO: BASE_URL + "/rasps/video",
-  WEB_SERVER_UPDATE: BASE_URL + "/update",
+  WEB_SERVER_UPDATE: BASE_URL + "/update"
 };
