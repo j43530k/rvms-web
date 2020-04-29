@@ -1,0 +1,36 @@
+<html>
+<% include head.ejs %>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="p-4">라즈베리파이</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table text-center">
+                    <tr>
+                        <th scope="col">분류</th>
+                        <th scope="col">값</th>
+                    </tr>
+                    <tr>
+                        <th scope="row">내 IP</th>
+                        <td><%= info.ip %></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">연결된 서버</th>
+                        <td><%= info.server %></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">재생 중인 영상</th>
+                        <td><%= info.video_name %></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <% include script.ejs %>
+</body>
+
+</html>
