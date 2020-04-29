@@ -1,0 +1,15 @@
+export default {
+  CHANGE_SELECTING: "changeSelecting",
+  INIT_SELECTED_RASP: "initSelectedRasp",
+  LOAD_RASP_INFO: "loadRaspInfo",
+  LOAD_RASP_LIST: "loadRaspList",
+  ADD_RASP: "addRasp",
+  DELETE_RASP: "deleteRasp",
+  UPDATE_RASP: "updateRasp",
+  RENAME_RASP: "renameRasp",
+  UPLOAD_VIDEO: "uploadVideo",
+  TOGGLE_SELECTING_RASP: "toggleSelectingRasp",
+  SELECT_RASP: "selectRasp",
+  DESELECT_RASP: "deselectRasp",
+  UPDATE_WEB_SERVER: "updateWebServer",
+};
