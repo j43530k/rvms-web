@@ -2,14 +2,17 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import axios from "axios";
+import VueSocketio from 'vue-socket.io';
 
 import router from './router'
 import store from "./store";
+import config from './config';
 
 import App from './App'
 
 Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
+Vue.use(VueSocketio, config.BASE_URL);
 
 /* eslint-disable no-new */
 new Vue({

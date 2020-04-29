@@ -10,18 +10,22 @@ export default {
     store.commit(CONSTANT.CHANGE_SELECTING, payload);
   },
   [CONSTANT.LOAD_RASP_INFO]: (store, payload) => {
+    store.commit(CONSTANT.CHANGE_LOADING, true);
     api.loadRaspInfo(payload).then(response => {
       if (response.data.status == "success" && response.data.rasp != null) {
         store.commit(CONSTANT.LOAD_RASP_INFO, response.data.rasp);
+        store.commit(CONSTANT.CHANGE_LOADING, false);
       } else {
         alert("정보를 불러오는데 실패했습니다.\n새로고침 후에도 문제가 지속되면 관리자에게 문의해주세요.");
       }
     })
   },
   [CONSTANT.LOAD_RASP_LIST]: (store, payload) => {
+    store.commit(CONSTANT.CHANGE_LOADING, true);
     api.loadRaspList(payload).then(response => {
       if (response.data.status == "success") {
         store.commit(CONSTANT.LOAD_RASP_LIST, response.data.rasps);
+        store.commit(CONSTANT.CHANGE_LOADING, false);
       } else {
         alert("정보를 불러오는데 실패했습니다.\n새로고침 후에도 문제가 지속되면 관리자에게 문의해주세요.");
       }
@@ -75,10 +79,7 @@ export default {
   [CONSTANT.UPLOAD_VIDEO]: (store, payload) => {
     api.uploadVideo(payload).then(response => {
       if (response.data.status == "success") {
-        alert("영상 업로드 성공");
-        router.push({
-          name: "Home"
-        });
+        alert("웹 서버에 영상 업로드 성공");
       } else {
         alert("라즈베리파이에 영상을 업로드하는데 실패했습니다.\n재시도 후에도 문제가 지속되면 관리자에게 문의해주세요.\n실패한 라즈베리파이 : " + response.data.errors.join(", "));
       }

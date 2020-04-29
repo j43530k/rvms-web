@@ -54,5 +54,7 @@ span.target-rasp {
     border: 2px solid #b3e5fc;
     border-radius: 0.25rem;
     padding: 10px 15px;
+    margin: 5px 2px;
+    display: inline-block;
 }
 </style>

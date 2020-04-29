@@ -12,4 +12,6 @@ export default {
   SELECT_RASP: "selectRasp",
   DESELECT_RASP: "deselectRasp",
   UPDATE_WEB_SERVER: "updateWebServer",
+  CHANGE_LOADING: "changeLoading",
+  CHANGE_UPLOADED: "changeUploaded",
 };

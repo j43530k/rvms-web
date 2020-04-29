@@ -1,6 +1,7 @@
-var BASE_URL = "/api";
+var BASE_URL = "http://localhost:3000";
 
 export default {
+  BASE_URL,
   RASP_ONE: BASE_URL + "/rasps/${id}",
   RASP_RENAME: BASE_URL + "/rasps/${id}/rename",
   RASP_UPDATE: BASE_URL + "/rasps/${id}/update",

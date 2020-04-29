@@ -15,12 +15,26 @@
         <div class="row">
             <div class="col">
                 <div class="dropbox">
-                    <input type="file" accept="video/mp4,video/x-m4v,video/*" @change="uploadVideo($event.target.files)" @drop="uploadVideo($event.target.files)" ref="fileInput">
+                    <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*" @change="uploadVideo($event.target.files)" ref="fileInput">
                     <div class="text">
                         <div>영상 파일을</div>
                         <div>Drag&Drop 하거나</div>
                         <div>여기를 클릭해서 선택</div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" :style="{width:uploaded.toFixed(2)+'%'}" :aria-valuenow="uploaded.toFixed(2)" aria-valuemin="0" aria-valuemax="100">{{ uploaded.toFixed(2) }}%</div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-1" v-for="rasp in selectedRasp" :key="rasp._id" v-if="uploadedToRasp[uploadedToRasp.findIndex(function(e) {return e.id == rasp._id;})]">
+            <div class="col">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" :style="{width:uploadedPercent(rasp)+'%'}" :aria-valuenow="uploadedPercent(rasp)" aria-valuemin="0" aria-valuemax="100">{{ rasp.name }} : {{ uploadedPercent(rasp) }}%</div>
                 </div>
             </div>
         </div>
@@ -40,6 +54,32 @@ export default {
             return this.$router.push({ name: "Home" });
         }
         this.$store.dispatch(CONSTANT.CHANGE_SELECTING, false);
+        this.selectedRasp.forEach(rasp => {
+            this.uploadedToRasp.push({
+                id: rasp._id,
+                percent: 0
+            });
+        });
+    },
+    data: function() {
+        return {
+            uploadedToRasp: []
+        };
+    },
+    sockets: {
+        connect: function() {
+            console.log("Socket Connected.");
+        },
+        uploadedVideoSize: function(info) {
+            this.uploadedToRasp[
+                this.uploadedToRasp.findIndex(function(e) {
+                    return e.id == info.rasp._id;
+                })
+            ].percent = (info.size / info.total * 100).toFixed(2);
+        },
+        videoUploaded: function(info) {
+            alert(info.rasp.name + "에 업로드 완료");
+        }
     },
     methods: {
         uploadVideo: function(files) {
@@ -53,9 +93,16 @@ export default {
             });
             this.$refs.fileInput.type = "text";
             this.$refs.fileInput.type = "file";
+        },
+        uploadedPercent: function(rasp) {
+            return this.uploadedToRasp[
+                this.uploadedToRasp.findIndex(function(e) {
+                    return e.id == rasp._id;
+                })
+            ].percent;
         }
     },
-    computed: mapState(["selectedRasp"])
+    computed: mapState(["selectedRasp", "uploaded"])
 };
 </script>
 
@@ -64,6 +111,8 @@ span.target-rasp {
     border: 2px solid #b3e5fc;
     border-radius: 0.25rem;
     padding: 10px 15px;
+    margin: 5px 2px;
+    display: inline-block;
 }
 
 .dropbox {
@@ -72,6 +121,7 @@ span.target-rasp {
     min-width: 300px;
     min-height: 300px;
     text-align: center;
+    margin-bottom: 15px;
 }
 .dropbox > div.text {
     padding-top: 80px;

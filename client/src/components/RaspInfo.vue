@@ -55,6 +55,7 @@
                 </div>
             </div>
         </div>
+        <loading></loading>
     </div>
 </template>
 
@@ -62,9 +63,13 @@
 import { mapState } from "vuex";
 
 import CONSTANT from "../constant";
+import Loading from "./Loading";
 
 export default {
     name: "RaspInfo",
+    components: {
+        Loading
+    },
     props: ["id"],
     mounted: function() {
         this.$store.dispatch(CONSTANT.LOAD_RASP_INFO, this.id);

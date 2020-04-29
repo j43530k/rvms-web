@@ -18,5 +18,11 @@ export default {
   },
   [CONSTANT.DESELECT_RASP]: (state, payload) => {
     state.selectedRasp.splice(state.selectedRasp.indexOf(payload), 1);
-  }
+  },
+  [CONSTANT.CHANGE_UPLOADED]: (state, payload) => {
+    state.uploaded = payload;
+  },
+  [CONSTANT.CHANGE_LOADING]: (state, payload) => {
+    state.loading = payload;
+  },
 };

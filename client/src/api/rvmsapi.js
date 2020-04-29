@@ -1,5 +1,8 @@
-import CONFIG from "../config";
 import axios from "axios";
+
+import CONFIG from "../config";
+import CONSTANT from "../constant";
+import store from "../store";
 
 export default {
   loadRaspInfo: function (id) {
@@ -29,7 +32,11 @@ export default {
     var formData = new FormData();
     formData.append("ids", payload.ids);
     formData.append("video", payload.file, payload.file.name);
-    return axios.post(CONFIG.RASPS_VIDEO, formData);
+    return axios.post(CONFIG.RASPS_VIDEO, formData, {
+      onUploadProgress: function (progressEvent) {
+        store.commit(CONSTANT.CHANGE_UPLOADED, progressEvent.loaded / progressEvent.total * 100)
+      }
+    });
   },
   updateWebServer: function () {
     return axios.post(CONFIG.WEB_SERVER_UPDATE);

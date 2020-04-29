@@ -8,6 +8,7 @@ import UpdateRasp from '@/components/UpdateRasp'
 import RaspInfo from '@/components/RaspInfo'
 import UploadVideo from '@/components/UploadVideo'
 import UpdateWebServer from '@/components/UpdateWebServer'
+import NotFound from '@/components/NotFound'
 
 Vue.use(Router)
 
@@ -42,5 +43,9 @@ export default new Router({
     path: '/update',
     name: 'UpdateWebServer',
     component: UpdateWebServer
+  }, {
+    path: '*',
+    name: 'NotFound',
+    component: NotFound
   }]
 })
