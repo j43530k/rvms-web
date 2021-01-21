@@ -29,7 +29,7 @@
         "multer": "^1.3.0",
         "npm": "^6.1.0",
         "path": "^0.12.7",
-        "socket.io": "^2.1.1"
+        "socket.io": "^2.4.0"
     },
     "bugs": {
         "url": "https://github.com/j43530k/rvms-rasp/issues"
